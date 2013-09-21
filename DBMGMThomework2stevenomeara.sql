@@ -7,7 +7,7 @@ WHERE agents.aid in
    WHERE cid = 'c0002');
    
    
--- 2)Get	the	pids of products ordered through any agent	who	makes	at least one	order	for	a	customer in	Kyoto.(This	is not	the	same as asking for pids of	products ordered by	a	customer in	Kyoto.)
+-- 2)Get the pids of products ordered through any agent	who makes at least one	order for a customer in	Kyoto.(This is not the same as asking for pids of products ordered by a customer in Kyoto.)
 SELECT distinct orders.pid
 FROM orders
 WHERE aid in
@@ -50,7 +50,7 @@ WHERE orders.pid = 'p07' AND orders.cid in
 	)
 );
   
---- 5)Get	the	pids of products ordered by any customers	who	ever placed an order through	agent	a03.
+--- 5)Get the pids of products ordered by any customers	who ever placed an order through agent a03.
 SELECT distinct orders.pid
 FROM public.orders
 WHERE cid in 
@@ -58,7 +58,7 @@ WHERE cid in
     FROM public.orders
     WHERE aid = 'a03');
     
--- 6)Get	the	names	and	discounts	of all customers who	place	orders through	agents in	Dallas or	Duluth.
+-- 6)Get the names and discounts of all customers who place orders through agents in Dallas or	Duluth.
 SELECT distinct name, discount
 FROM customers
 WHERE cid in 
@@ -75,7 +75,7 @@ SELECT distinct cid
   )
 );
 
--- 7)Find all customers who have the same discount as that of any	customers	in Dallas	or Kyoto.
+-- 7)Find all customers who have the same discount as that of any customers in Dallas or Kyoto.
 SELECT name
 FROM customers
 WHERE discount in 
