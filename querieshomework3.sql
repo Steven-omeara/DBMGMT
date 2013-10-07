@@ -158,3 +158,68 @@ SELECT customers.name, orders.pid, orders.dollars
 FROM orders, customers
 WHERE orders.cid = customers.cid
 Order BY dollars Desc
+
+--14.Show all customer names(in order) and their total ordered, and nothing more. Use coalesce to avoid showing NULLs.
+SELECT c.name, COALESCE (   SUM(dollars) , 0  )as Total
+FROM customers c
+FULL OUTER JOIN orders o
+on c.cid = o.cid
+group by c.cid
+order by total desc
+
+--15.Show the names of all customers who bought from agents based in New york along with the names of the product they ordered, and the names of the agents who sold it to them
+SELECT c.name, p.name, a.name
+FROM customers c, orders o, agents a, products p
+WHERE c.cid = o.cid
+AND
+o.pid = p.pid
+AND
+o.aid = a.aid
+AND 
+a.city = 'New York'
+;
+
+--16.Write a query to check the accuracy of the dollars column in the Orders table, This means calculating Orders.dollars from other data in other tables and then comparing those values in Orders.dollars.
+DROP VIEW IF EXISTS accuracy;
+CREATE VIEW accuracy AS
+  (
+  SELECT o.ordno, (p.priceUSD * o.qty ) - ((p.priceUSD * o.qty )* (c.discount / 100)) as ACC
+  FROM orders o, products p, customers c
+  WHERE o.cid = c.cid
+  AND 
+  o.pid = p.pid
+  group by o.ordno, ACC
+  ORDER BY o.ordno asc
+  )
+;
+
+SELECT o.ordno, o.dollars, a.ACC
+FROM accuracy a, orders o
+WHERE o.ordno = a.ordno
+;
+
+--17.Create an error in the dollars column of the Orders table so that you can verify your accuracy checking query
+UPDATE orders
+SET dollars = '300'
+WHERE ordno = '1011'
+;
+
+DROP VIEW IF EXISTS accuracy;
+CREATE VIEW accuracy AS
+  (
+  SELECT o.ordno, (p.priceUSD * o.qty ) - ((p.priceUSD * o.qty )* (c.discount / 100)) as ACC 
+  FROM orders o, products p, customers c
+  WHERE o.cid = c.cid
+  AND 
+  o.pid = p.pid
+  group by o.ordno, ACC
+  ORDER BY o.ordno asc 
+  )
+;
+
+SELECT o.ordno, o.dollars, a.ACC
+FROM accuracy a, orders o 
+WHERE o.ordno = a.ordno 
+AND
+a.ACC != o.dollars 
+;
