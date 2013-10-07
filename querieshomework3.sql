@@ -73,3 +73,88 @@ c.city = a.city;
 SELECT distinct customers.name, agents.name, customers.city
 FROM customers , agents, orders
 WHERE customers.city = agents.city;
+
+--9. Get the name and city of customers who live in a city where the least number of products are made.
+DROP VIEW IF EXISTS leastproducts;
+CREATE VIEW leastproducts AS
+	(
+	SELECT products.city, count(city) as Num
+	FROM products
+	group by products.city
+	)
+;
+
+SELECT c.name, c.city
+FROM customers c
+WHERE c.city in
+	(
+	SELECT products.city
+	FROM products
+	Group by products.city
+	HAVING count(city) in 
+		(
+		SELECT MIN(num) from leastproducts
+		)
+	)
+;
+
+--10. Get the name and city of customers who live in any city where the most number of products are made.
+DROP VIEW IF EXISTS leastproducts;
+CREATE VIEW leastproducts AS
+	(
+	SELECT products.city, count(city) as Num
+	FROM products
+	group by products.city
+	)
+;
+
+SELECT c.name, c.city
+FROM customers c
+WHERE c.city in
+	(
+	SELECT products.city
+	FROM products
+	Group by products.city
+	HAVING count(city) in 
+		(
+		SELECT MAX(num) from leastproducts
+		)
+	)
+;
+
+--11. Get the name and city of customers who live in any city where the most number of products are made.
+DROP VIEW IF EXISTS leastproducts;
+CREATE VIEW leastproducts AS
+	(
+	SELECT products.city, count(city) as Num
+	FROM products
+	group by products.city
+	)
+;
+
+SELECT c.name, c.city
+FROM customers c
+WHERE c.city in
+	(
+	SELECT products.city
+	FROM products
+	Group by products.city
+	HAVING count(city) in (SELECT MAX(num) from leastproducts)
+	LIMIT 1
+	)
+;
+
+--12.List the products whose priceUSD is above the average priceUSD.
+SELECT products.name
+FROM products
+WHERE products.priceUSD >
+	(
+	SELECT avg(priceUSD) as averageprice
+	FROM products
+	)
+	
+--13.Show the customer name, pid ordered, and the dollars for all customer orders, sorted by dollars from high to low
+SELECT customers.name, orders.pid, orders.dollars
+FROM orders, customers
+WHERE orders.cid = customers.cid
+Order BY dollars Desc
